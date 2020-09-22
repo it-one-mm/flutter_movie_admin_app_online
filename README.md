@@ -1,6 +1,6 @@
 # movie_admin_app
 
-A new Flutter application.
+A new Flutter Movie Admin Application taught By [IT ONE MM](https://www.facebook.com/ItOneTeam/).
 
 ## Getting Started
 
