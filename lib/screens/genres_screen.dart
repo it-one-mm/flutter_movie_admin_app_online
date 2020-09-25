@@ -14,6 +14,7 @@ class GenresScreen extends StatefulWidget {
 
 class _GenresScreenState extends State<GenresScreen> {
   final _searchController = TextEditingController();
+  List<Genre> _filterGenres = [];
 
   @override
   void dispose() {
@@ -22,14 +23,22 @@ class _GenresScreenState extends State<GenresScreen> {
     super.dispose();
   }
 
+  void _clearSearch() {
+    _filterGenres = [];
+    _searchController.clear();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final genres = Provider.of<List<Genre>>(context);
+    final results = _filterGenres.length == 0 ? genres : _filterGenres;
 
     return MasterView(
       title: 'Genres',
-      onCreate: () {
-        Router.buildMaterialRoute(context, child: GenreForm());
+      onCreate: () async {
+        await Router.buildMaterialRoute(context, child: GenreForm());
+        _clearSearch();
       },
       child: Column(
         children: [
@@ -44,8 +53,7 @@ class _GenresScreenState extends State<GenresScreen> {
                     ? IconButton(
                         icon: Icon(Icons.clear),
                         onPressed: () {
-                          _searchController.clear();
-                          setState(() {});
+                          _clearSearch();
                         },
                       )
                     : null,
@@ -55,29 +63,39 @@ class _GenresScreenState extends State<GenresScreen> {
               },
               onFieldSubmitted: (String value) {
                 if (value.trim().isNotEmpty) {
-                  print(value);
+                  _filterGenres = genres
+                      .where((genre) => genre.name
+                          .toLowerCase()
+                          .contains(value.toLowerCase()))
+                      .toList();
+                } else {
+                  _filterGenres = genres;
                 }
+
+                setState(() {});
               },
             ),
           ),
           Expanded(
             child: ListView.separated(
+              separatorBuilder: (context, index) => Divider(),
+              itemCount: results.length,
               itemBuilder: (context, index) {
-                final genre = genres[index];
+                final genre = results[index];
 
                 return ListTile(
                   title: Text(genre.name),
                   trailing: IconButton(
                     icon: Icon(Icons.edit),
-                    onPressed: () {
-                      Router.buildMaterialRoute(context,
+                    onPressed: () async {
+                      await Router.buildMaterialRoute(context,
                           child: GenreForm(genre: genre));
+
+                      _clearSearch();
                     },
                   ),
                 );
               },
-              separatorBuilder: (context, index) => Divider(),
-              itemCount: genres.length,
             ),
           ),
         ],
