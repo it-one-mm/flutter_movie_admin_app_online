@@ -26,6 +26,10 @@ class GenreService {
   }
 
   static Future<void> save(Genre genre) async {
-    await _ref.add(Genre.toMap(genre));
+    await _ref.add(Genre.toMap(genre, isNew: true));
+  }
+
+  static Future<void> update(String docId, Genre genre) async {
+    await _ref.doc(docId).update(Genre.toMap(genre));
   }
 }

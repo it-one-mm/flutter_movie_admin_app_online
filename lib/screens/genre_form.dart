@@ -4,15 +4,34 @@ import '../services/genre_service.dart';
 import '../widgets/progress_hud.dart';
 
 class GenreForm extends StatefulWidget {
+  GenreForm({this.genre});
+
+  final Genre genre;
+
   @override
   _GenreFormState createState() => _GenreFormState();
 }
 
 class _GenreFormState extends State<GenreForm> {
+  Genre _genre;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   bool _isAsyncCall = false;
   bool _isExist = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _genre = widget.genre;
+    _init();
+  }
+
+  void _init() {
+    if (_genre != null) {
+      _nameController.text = _genre.name;
+    }
+  }
 
   @override
   void dispose() {
@@ -21,11 +40,73 @@ class _GenreFormState extends State<GenreForm> {
     super.dispose();
   }
 
+  String _validateName(String value) {
+    if (value.trim().isEmpty) {
+      return 'Name is required.';
+    }
+
+    if (_isExist) {
+      _isExist = false;
+      return 'Name is already taken.';
+    }
+
+    return null;
+  }
+
+  void _handleSave() async {
+    if (_formKey.currentState.validate()) {
+      setState(() {
+        _isAsyncCall = true;
+      });
+
+      // dismiss keyboard during async call
+      FocusScope.of(context).requestFocus(FocusNode());
+
+      final name = _nameController.text;
+
+      // check genre already taken
+      final result = await GenreService.checkDocumentsByName(name);
+      setState(() {
+        if (result) {
+          _isExist = true;
+          _formKey.currentState.validate();
+        } else {
+          _isExist = false;
+        }
+      });
+
+      if (!result) {
+        Genre genre = Genre(
+          name: name,
+        );
+
+        if (_genre == null) {
+          // genre save
+          await GenreService.save(genre);
+        } else {
+          // update
+          await GenreService.update(_genre.id, genre);
+
+          Navigator.pop(context);
+        }
+
+        _formKey.currentState.reset();
+        _nameController.clear();
+      }
+
+      setState(() {
+        _isAsyncCall = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final title = _genre == null ? 'Create Genre' : 'Edit Genre';
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Genre'),
+        title: Text(title),
       ),
       body: SafeArea(
         child: ProgressHUD(
@@ -40,67 +121,18 @@ class _GenreFormState extends State<GenreForm> {
                     controller: _nameController,
                     autocorrect: false,
                     textCapitalization: TextCapitalization.none,
+                    autofocus: true,
                     decoration: InputDecoration(
                       labelText: 'Name *',
                       errorStyle: TextStyle(
                         color: Colors.greenAccent,
                       ),
                     ),
-                    validator: (String value) {
-                      if (value.trim().isEmpty) {
-                        return 'Name is required.';
-                      }
-
-                      if (_isExist) {
-                        _isExist = false;
-                        return 'Name is already taken.';
-                      }
-
-                      return null;
-                    },
+                    validator: _validateName,
                   ),
                   RaisedButton(
                     child: Text('Save'),
-                    onPressed: () async {
-                      if (_formKey.currentState.validate()) {
-                        setState(() {
-                          _isAsyncCall = true;
-                        });
-
-                        // dismiss keyboard during async call
-                        FocusScope.of(context).requestFocus(FocusNode());
-
-                        final name = _nameController.text;
-
-                        // check genre already taken
-                        final result =
-                            await GenreService.checkDocumentsByName(name);
-                        setState(() {
-                          if (result) {
-                            _isExist = true;
-                            _formKey.currentState.validate();
-                          } else {
-                            _isExist = false;
-                          }
-                        });
-
-                        if (!result) {
-                          Genre genre = Genre(
-                            name: name,
-                          );
-
-                          // genre save
-                          await GenreService.save(genre);
-
-                          _formKey.currentState.reset();
-                          _nameController.clear();
-                        }
-
-                        setState(() {
-                          _isAsyncCall = false;
-                        });
-                      }
-                    },
+                    onPressed: _handleSave,
                   ),
                 ],
               ),
