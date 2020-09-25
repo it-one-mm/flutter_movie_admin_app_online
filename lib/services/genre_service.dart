@@ -5,6 +5,11 @@ class GenreService {
   static final CollectionReference _ref =
       FirebaseFirestore.instance.collection('genres');
 
+  static Stream<List<Genre>> genresStream() {
+    return _ref.orderBy('created', descending: true).snapshots().map((qs) =>
+        qs.docs.map((qdsn) => Genre.fromQueryDocumentSnapshot(qdsn)).toList());
+  }
+
   static Future<bool> checkDocumentsByName(String name) async {
     final qsn = await _ref.get();
     bool isExist = false;

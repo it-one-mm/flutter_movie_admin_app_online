@@ -5,10 +5,12 @@ class MasterView extends StatelessWidget {
   MasterView({
     @required this.title,
     @required this.onCreate,
+    this.child,
   });
 
   final String title;
   final Function onCreate;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class MasterView extends StatelessWidget {
         ],
       ),
       drawer: MyDrawer(),
+      body: child,
     );
   }
 }
