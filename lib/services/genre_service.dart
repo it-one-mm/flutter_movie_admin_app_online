@@ -32,4 +32,8 @@ class GenreService {
   static Future<void> update(String docId, Genre genre) async {
     await _ref.doc(docId).update(Genre.toMap(genre));
   }
+
+  static Future<void> delete(String docId) async {
+    await _ref.doc(docId).delete();
+  }
 }

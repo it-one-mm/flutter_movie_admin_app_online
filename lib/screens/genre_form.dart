@@ -86,7 +86,6 @@ class _GenreFormState extends State<GenreForm> {
         } else {
           // update
           await GenreService.update(_genre.id, genre);
-
           Navigator.pop(context);
         }
 
@@ -98,6 +97,20 @@ class _GenreFormState extends State<GenreForm> {
         _isAsyncCall = false;
       });
     }
+  }
+
+  void _handleDelete() async {
+    setState(() {
+      _isAsyncCall = true;
+    });
+
+    // delete
+    await GenreService.delete(_genre.id);
+    Navigator.pop(context);
+
+    setState(() {
+      _isAsyncCall = false;
+    });
   }
 
   @override
@@ -131,9 +144,16 @@ class _GenreFormState extends State<GenreForm> {
                     validator: _validateName,
                   ),
                   RaisedButton(
-                    child: Text('Save'),
+                    child: Text('SAVE'),
                     onPressed: _handleSave,
                   ),
+                  _genre == null
+                      ? Container()
+                      : RaisedButton(
+                          color: Colors.red,
+                          child: Text('DELETE'),
+                          onPressed: _handleDelete,
+                        )
                 ],
               ),
             ),
