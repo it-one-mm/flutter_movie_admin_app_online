@@ -73,7 +73,8 @@ class _GenreFormState extends State<GenreForm> {
                         final name = _nameController.text;
 
                         // check genre already taken
-                        final result = await GenreService.checkByName(name);
+                        final result =
+                            await GenreService.checkDocumentsByName(name);
                         setState(() {
                           if (result) {
                             _isExist = true;
