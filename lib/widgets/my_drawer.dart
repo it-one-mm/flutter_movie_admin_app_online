@@ -26,6 +26,9 @@ class MyDrawer extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline4,
               ),
             ),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+            ),
           ),
           _buildDrawerItem(
             context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'genre_form.dart';
 import '../widgets/master_view.dart';
 
 class GenresScreen extends StatelessWidget {
@@ -6,7 +7,15 @@ class GenresScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MasterView(
       title: 'Genres',
-      onCreate: () {},
+      onCreate: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GenreForm(),
+            fullscreenDialog: true,
+          ),
+        );
+      },
     );
   }
 }
