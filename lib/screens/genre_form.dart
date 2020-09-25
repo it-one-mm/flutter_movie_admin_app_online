@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_admin_app/services/genre_service.dart';
-import 'package:movie_admin_app/widgets/progress_hud.dart';
+import '../models/genre.dart';
+import '../services/genre_service.dart';
+import '../widgets/progress_hud.dart';
 
 class GenreForm extends StatefulWidget {
   @override
@@ -85,11 +85,12 @@ class _GenreFormState extends State<GenreForm> {
                         });
 
                         if (!result) {
+                          Genre genre = Genre(
+                            name: name,
+                          );
+
                           // genre save
-                          await GenreService.save({
-                            'name': name,
-                            'created': FieldValue.serverTimestamp(),
-                          });
+                          await GenreService.save(genre);
 
                           _formKey.currentState.reset();
                           _nameController.clear();

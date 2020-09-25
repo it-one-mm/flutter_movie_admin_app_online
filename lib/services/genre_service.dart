@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/genre.dart';
 
 class GenreService {
   static final CollectionReference _ref =
@@ -19,7 +20,7 @@ class GenreService {
     return isExist;
   }
 
-  static Future<void> save(Map<String, dynamic> map) async {
-    await _ref.add(map);
+  static Future<void> save(Genre genre) async {
+    await _ref.add(Genre.toMap(genre));
   }
 }
