@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/constants.dart';
+import '../widgets/my_text_form_field.dart';
 import '../utils/ui_helper.dart';
 import '../models/genre.dart';
 import '../services/genre_service.dart';
@@ -135,16 +137,11 @@ class _GenreFormState extends State<GenreForm> {
               key: _formKey,
               child: ListView(
                 children: [
-                  TextFormField(
+                  MyTextFormField(
                     controller: _nameController,
-                    autocorrect: false,
-                    textCapitalization: TextCapitalization.none,
                     autofocus: true,
-                    decoration: InputDecoration(
+                    decoration: kFormFieldInputDecoration.copyWith(
                       labelText: 'Name *',
-                      errorStyle: TextStyle(
-                        color: Colors.greenAccent,
-                      ),
                     ),
                     validator: _validateName,
                   ),
