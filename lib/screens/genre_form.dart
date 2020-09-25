@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/ui_helper.dart';
 import '../models/genre.dart';
 import '../services/genre_service.dart';
 import '../widgets/progress_hud.dart';
@@ -89,6 +90,8 @@ class _GenreFormState extends State<GenreForm> {
           Navigator.pop(context);
         }
 
+        UIHelper.showSuccessFlushbar(context, 'Genre saved successfully!');
+
         _formKey.currentState.reset();
         _nameController.clear();
       }
@@ -107,6 +110,8 @@ class _GenreFormState extends State<GenreForm> {
     // delete
     await GenreService.delete(_genre.id);
     Navigator.pop(context);
+
+    UIHelper.showSuccessFlushbar(context, 'Genre delete successfully!');
 
     setState(() {
       _isAsyncCall = false;
