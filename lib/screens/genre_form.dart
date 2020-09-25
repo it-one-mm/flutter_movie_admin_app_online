@@ -11,7 +11,8 @@ class GenreForm extends StatefulWidget {
 class _GenreFormState extends State<GenreForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  bool isAsynCall = false;
+  bool _isAsyncCall = false;
+  bool _isExist = false;
 
   @override
   void dispose() {
@@ -28,7 +29,7 @@ class _GenreFormState extends State<GenreForm> {
       ),
       body: SafeArea(
         child: ProgressHUD(
-          inAsyncCall: isAsynCall,
+          inAsyncCall: _isAsyncCall,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Form(
@@ -50,6 +51,11 @@ class _GenreFormState extends State<GenreForm> {
                         return 'Name is required.';
                       }
 
+                      if (_isExist) {
+                        _isExist = false;
+                        return 'Name is already taken.';
+                      }
+
                       return null;
                     },
                   ),
@@ -58,7 +64,7 @@ class _GenreFormState extends State<GenreForm> {
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {
                         setState(() {
-                          isAsynCall = true;
+                          _isAsyncCall = true;
                         });
 
                         // dismiss keyboard during async call
@@ -66,17 +72,30 @@ class _GenreFormState extends State<GenreForm> {
 
                         final name = _nameController.text;
 
-                        // genre save
-                        await GenreService.save({
-                          'name': name,
-                          'created': FieldValue.serverTimestamp(),
+                        // check genre already taken
+                        final result = await GenreService.checkByName(name);
+                        setState(() {
+                          if (result) {
+                            _isExist = true;
+                            _formKey.currentState.validate();
+                          } else {
+                            _isExist = false;
+                          }
                         });
 
-                        _formKey.currentState.reset();
-                        _nameController.clear();
+                        if (!result) {
+                          // genre save
+                          await GenreService.save({
+                            'name': name,
+                            'created': FieldValue.serverTimestamp(),
+                          });
+
+                          _formKey.currentState.reset();
+                          _nameController.clear();
+                        }
 
                         setState(() {
-                          isAsynCall = false;
+                          _isAsyncCall = false;
                         });
                       }
                     },
