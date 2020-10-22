@@ -1,5 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Router;
 import 'package:provider/provider.dart';
 import 'models/genre.dart';
 import 'services/genre_service.dart';
