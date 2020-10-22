@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
-import '../widgets/my_text_form_field.dart';
 import '../utils/ui_helper.dart';
+import '../widgets/form_wrapper.dart';
+import '../widgets/my_text_form_field.dart';
 import '../models/genre.dart';
 import '../services/genre_service.dart';
-import '../widgets/progress_hud.dart';
 
 class GenreForm extends StatefulWidget {
   GenreForm({this.genre});
@@ -19,7 +19,6 @@ class _GenreFormState extends State<GenreForm> {
   Genre _genre;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  bool _isAsyncCall = false;
   bool _isExist = false;
 
   @override
@@ -56,112 +55,69 @@ class _GenreFormState extends State<GenreForm> {
     return null;
   }
 
-  void _handleSave() async {
-    if (_formKey.currentState.validate()) {
-      setState(() {
-        _isAsyncCall = true;
-      });
+  Future<void> _handleSave() async {
+    final name = _nameController.text;
 
-      // dismiss keyboard during async call
-      FocusScope.of(context).requestFocus(FocusNode());
+    // check genre already taken
+    final result = await GenreService.checkDocumentsByName(name);
+    setState(() {
+      if (result) {
+        _isExist = true;
+        _formKey.currentState.validate();
+      } else {
+        _isExist = false;
+      }
+    });
 
-      final name = _nameController.text;
+    if (!result) {
+      Genre genre = Genre(
+        name: name,
+      );
 
-      // check genre already taken
-      final result = await GenreService.checkDocumentsByName(name);
-      setState(() {
-        if (result) {
-          _isExist = true;
-          _formKey.currentState.validate();
-        } else {
-          _isExist = false;
-        }
-      });
-
-      if (!result) {
-        Genre genre = Genre(
-          name: name,
-        );
-
-        if (_genre == null) {
-          // genre save
-          await GenreService.save(genre);
-        } else {
-          // update
-          await GenreService.update(_genre.id, genre);
-          Navigator.pop(context);
-        }
-
-        UIHelper.showSuccessFlushbar(context, 'Genre saved successfully!');
-
-        _formKey.currentState.reset();
-        _nameController.clear();
+      if (_genre == null) {
+        // genre save
+        await GenreService.save(genre);
+      } else {
+        // update
+        await GenreService.update(_genre.id, genre);
+        Navigator.pop(context);
       }
 
-      setState(() {
-        _isAsyncCall = false;
-      });
+      UIHelper.showSuccessFlushbar(context, 'Genre saved successfully!');
+
+      _formKey.currentState.reset();
+      _nameController.clear();
     }
   }
 
-  void _handleDelete() async {
-    setState(() {
-      _isAsyncCall = true;
-    });
-
+  Future<void> _handleDelete() async {
     // delete
     await GenreService.delete(_genre.id);
     Navigator.pop(context);
 
     UIHelper.showSuccessFlushbar(context, 'Genre delete successfully!');
-
-    setState(() {
-      _isAsyncCall = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final title = _genre == null ? 'Create Genre' : 'Edit Genre';
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: SafeArea(
-        child: ProgressHUD(
-          inAsyncCall: _isAsyncCall,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  MyTextFormField(
-                    controller: _nameController,
-                    autofocus: true,
-                    decoration: kFormFieldInputDecoration.copyWith(
-                      labelText: 'Name *',
-                    ),
-                    validator: _validateName,
-                  ),
-                  RaisedButton(
-                    child: Text('SAVE'),
-                    onPressed: _handleSave,
-                  ),
-                  _genre == null
-                      ? Container()
-                      : RaisedButton(
-                          color: Colors.red,
-                          child: Text('DELETE'),
-                          onPressed: _handleDelete,
-                        )
-                ],
-              ),
-            ),
+    return FormWrapper(
+      formKey: _formKey,
+      appBarTitle: title,
+      model: _genre,
+      handleDelete: _handleDelete,
+      handleSave: _handleSave,
+      formItems: [
+        MyTextFormField(
+          controller: _nameController,
+          autofocus: true,
+          decoration: kFormFieldInputDecoration.copyWith(
+            labelText: 'Name *',
           ),
+          validator: _validateName,
         ),
-      ),
+      ],
     );
   }
 }
