@@ -22,6 +22,7 @@ class _MovieFormState extends State<MovieForm> {
 
   List<Genre> _genres;
   Genre _selectedGenre;
+  bool _isExist = false;
 
   @override
   void initState() {
@@ -83,6 +84,11 @@ class _MovieFormState extends State<MovieForm> {
   String _validateTitle(String value) {
     if (value.trim().isEmpty) return 'Title is required!';
 
+    if (_isExist) {
+      _isExist = false;
+      return 'Title is already taken!';
+    }
+
     return null;
   }
 
@@ -91,22 +97,33 @@ class _MovieFormState extends State<MovieForm> {
     final imageUrl = _imageUrlController.text.trim();
     final key = _keyController.text.trim();
 
-    final movie = Movie(
-      title: title,
-      imageUrl: imageUrl,
-      key: key,
-      genreId: _selectedGenre.id,
-      genreName: _selectedGenre.name,
-    );
+    final result = await MovieService.checkDocumentByTitle(title);
 
-    await MovieService.saveMovie(Movie.toMap(movie, isNew: true));
+    setState(() {
+      if (result) {
+        _isExist = true;
+        _formKey.currentState.validate();
+      }
+    });
 
-    UIHelper.showSuccessFlushbar(context, 'movie saved successfully!');
+    if (!result) {
+      final movie = Movie(
+        title: title,
+        imageUrl: imageUrl,
+        key: key,
+        genreId: _selectedGenre.id,
+        genreName: _selectedGenre.name,
+      );
 
-    _formKey.currentState.reset();
-    _titleController.clear();
-    _imageUrlController.clear();
-    _keyController.clear();
+      await MovieService.saveMovie(Movie.toMap(movie, isNew: true));
+
+      UIHelper.showSuccessFlushbar(context, 'movie saved successfully!');
+
+      _formKey.currentState.reset();
+      _titleController.clear();
+      _imageUrlController.clear();
+      _keyController.clear();
+    }
   }
 
   @override
