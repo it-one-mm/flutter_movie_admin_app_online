@@ -39,4 +39,16 @@ class Movie {
 
     return data;
   }
+
+  factory Movie.fromQueryDocumentSnapshot(QueryDocumentSnapshot doc) {
+    final data = doc.data();
+
+    return Movie(
+        id: doc.id,
+        title: data[titleField],
+        imageUrl: data[imageUrlField],
+        key: data[keyField],
+        genreId: data[genreIdField],
+        genreName: data[genreNameField]);
+  }
 }

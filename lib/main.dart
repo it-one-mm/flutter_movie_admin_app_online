@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'package:provider/provider.dart';
+import 'models/movie.dart';
+import 'services/movie_service.dart';
 import 'models/genre.dart';
 import 'services/genre_service.dart';
 import 'router.dart';
@@ -18,7 +20,11 @@ class MyApp extends StatelessWidget {
       providers: [
         StreamProvider.value(
           initialData: <Genre>[],
-          value: GenreService.genresStream(),
+          value: GenreService.streamGenres(),
+        ),
+        StreamProvider.value(
+          initialData: <Movie>[],
+          value: MovieService.streamMovies(),
         ),
       ],
       child: MaterialApp(

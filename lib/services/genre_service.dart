@@ -5,7 +5,7 @@ class GenreService {
   static final CollectionReference _ref =
       FirebaseFirestore.instance.collection('genres');
 
-  static Stream<List<Genre>> genresStream() {
+  static Stream<List<Genre>> streamGenres() {
     return _ref.orderBy('created', descending: true).snapshots().map((qs) =>
         qs.docs.map((qdsn) => Genre.fromQueryDocumentSnapshot(qdsn)).toList());
   }
