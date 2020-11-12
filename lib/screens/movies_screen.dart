@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide Router;
 import 'package:provider/provider.dart';
-import '../widgets/movie_tile.dart';
+import '../widgets/image_tile.dart';
 import '../models/movie.dart';
 import '../widgets/master_view.dart';
 import '../router.dart';
@@ -23,8 +23,12 @@ class MoviesScreen extends StatelessWidget {
               separatorBuilder: (_, __) => Divider(),
               itemCount: movies.length,
               itemBuilder: (context, index) {
-                return MovieTile(
-                  movie: movies[index],
+                final movie = movies[index];
+
+                return ImageTile(
+                  imageUrl: movie.imageUrl,
+                  title: movie.title,
+                  subTitle: movie.genreName,
                 );
               },
             ),

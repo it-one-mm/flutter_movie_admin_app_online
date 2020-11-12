@@ -1,10 +1,17 @@
-import 'package:flutter/material.dart' hide Router;
-import '../models/movie.dart';
+import 'package:flutter/material.dart';
 
-class MovieTile extends StatelessWidget {
-  MovieTile({@required this.movie});
+class ImageTile extends StatelessWidget {
+  ImageTile({
+    this.imageUrl = 'https://via.placeholder.com/120x160.png',
+    this.title = '',
+    this.subTitle = '',
+    this.onEdit,
+  });
 
-  final Movie movie;
+  final String imageUrl;
+  final String title;
+  final String subTitle;
+  final Function onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +25,15 @@ class MovieTile extends StatelessWidget {
           maxHeight: 80,
         ),
         child: Image.network(
-          movie.imageUrl,
+          imageUrl,
           fit: BoxFit.cover,
         ),
       ),
-      title: Text(movie.title),
-      subtitle: Text(movie.genreName),
+      title: Text(title),
+      subtitle: Text(subTitle),
       trailing: IconButton(
         icon: Icon(Icons.edit),
-        onPressed: () async {},
+        onPressed: onEdit,
       ),
     );
   }
