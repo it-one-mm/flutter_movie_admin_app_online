@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../services/movie_service.dart';
+import '../utils/ui_helper.dart';
+import '../models/movie.dart';
 import '../models/genre.dart';
 import '../utils/constants.dart';
 import '../widgets/my_text_form_field.dart';
@@ -83,7 +86,28 @@ class _MovieFormState extends State<MovieForm> {
     return null;
   }
 
-  void _handleSave() async {}
+  void _handleSave() async {
+    final title = _titleController.text.trim();
+    final imageUrl = _imageUrlController.text.trim();
+    final key = _keyController.text.trim();
+
+    final movie = Movie(
+      title: title,
+      imageUrl: imageUrl,
+      key: key,
+      genreId: _selectedGenre.id,
+      genreName: _selectedGenre.name,
+    );
+
+    await MovieService.saveMovie(Movie.toMap(movie, isNew: true));
+
+    UIHelper.showSuccessFlushbar(context, 'movie saved successfully!');
+
+    _formKey.currentState.reset();
+    _titleController.clear();
+    _imageUrlController.clear();
+    _keyController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {

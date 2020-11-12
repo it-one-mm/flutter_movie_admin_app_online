@@ -56,7 +56,7 @@ class _GenreFormState extends State<GenreForm> {
   }
 
   Future<void> _handleSave() async {
-    final name = _nameController.text;
+    final name = _nameController.text.trim();
 
     // check genre already taken
     final result = await GenreService.checkDocumentsByName(name);
