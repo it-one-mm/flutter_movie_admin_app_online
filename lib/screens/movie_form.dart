@@ -65,13 +65,32 @@ class _MovieFormState extends State<MovieForm> {
     );
   }
 
-  // Title, ImageUrl, Key, Genre
+  String _validateImageUrl(String value) {
+    if (value.trim().isEmpty) return 'Image Url is required!';
+
+    return null;
+  }
+
+  String _validateKey(String value) {
+    if (value.trim().isEmpty) return 'Key is required!';
+
+    return null;
+  }
+
+  String _validateTitle(String value) {
+    if (value.trim().isEmpty) return 'Title is required!';
+
+    return null;
+  }
+
+  void _handleSave() async {}
 
   @override
   Widget build(BuildContext context) {
     return FormWrapper(
       formKey: _formKey,
       appBarTitle: 'Create Movie',
+      handleSave: _handleSave,
       formItems: <Widget>[
         MyTextFormField(
           controller: _titleController,
@@ -79,6 +98,7 @@ class _MovieFormState extends State<MovieForm> {
           decoration: kFormFieldInputDecoration.copyWith(
             labelText: 'Title *',
           ),
+          validator: _validateTitle,
         ),
         _buildDropDown(),
         MyTextFormField(
@@ -86,13 +106,14 @@ class _MovieFormState extends State<MovieForm> {
           decoration: kFormFieldInputDecoration.copyWith(
             labelText: 'Image Url *',
           ),
+          validator: _validateImageUrl,
         ),
         MyTextFormField(
-          controller: _keyController,
-          decoration: kFormFieldInputDecoration.copyWith(
-            labelText: 'Key *',
-          ),
-        ),
+            controller: _keyController,
+            decoration: kFormFieldInputDecoration.copyWith(
+              labelText: 'Key *',
+            ),
+            validator: _validateKey),
       ],
     );
   }
