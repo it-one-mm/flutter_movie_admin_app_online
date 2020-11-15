@@ -29,6 +29,12 @@ class MoviesScreen extends StatelessWidget {
                   imageUrl: movie.imageUrl,
                   title: movie.title,
                   subTitle: movie.genreName,
+                  onEdit: () async {
+                    await Router.buildMaterialRoute(
+                      context,
+                      child: MovieForm(movie: movie),
+                    );
+                  },
                 );
               },
             ),

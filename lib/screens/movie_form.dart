@@ -9,6 +9,10 @@ import '../widgets/my_text_form_field.dart';
 import '../widgets/form_wrapper.dart';
 
 class MovieForm extends StatefulWidget {
+  MovieForm({this.movie});
+
+  final Movie movie;
+
   @override
   _MovieFormState createState() => _MovieFormState();
 }
@@ -23,18 +27,29 @@ class _MovieFormState extends State<MovieForm> {
   List<Genre> _genres;
   Genre _selectedGenre;
   bool _isExist = false;
+  Movie _movie;
 
   @override
   void initState() {
     super.initState();
 
+    _movie = widget.movie;
     _init();
   }
 
   void _init() async {
     _genres = context.read<List<Genre>>();
 
-    _selectedGenre = _genres[0];
+    if (_movie == null) {
+      _selectedGenre = _genres[0];
+    } else {
+      _titleController.text = _movie.title;
+      _imageUrlController.text = _movie.imageUrl;
+      _keyController.text = _movie.key;
+
+      _selectedGenre =
+          _genres.where((genre) => genre.id == _movie.genreId).first;
+    }
   }
 
   @override
@@ -115,9 +130,14 @@ class _MovieFormState extends State<MovieForm> {
         genreName: _selectedGenre.name,
       );
 
-      await MovieService.saveMovie(Movie.toMap(movie, isNew: true));
+      if (_movie == null) {
+        await MovieService.saveMovie(Movie.toMap(movie, isNew: true));
+      } else {
+        await MovieService.updateMovie(_movie.id, Movie.toMap(movie));
+        Navigator.pop(context);
+      }
 
-      UIHelper.showSuccessFlushbar(context, 'movie saved successfully!');
+      UIHelper.showSuccessFlushbar(context, 'Movie saved successfully!');
 
       _formKey.currentState.reset();
       _titleController.clear();
@@ -126,12 +146,21 @@ class _MovieFormState extends State<MovieForm> {
     }
   }
 
+  void _handleDelete() async {
+    await MovieService.deleteMovie(_movie.id);
+    Navigator.pop(context);
+
+    UIHelper.showSuccessFlushbar(context, 'Movie deleted successfully!');
+  }
+
   @override
   Widget build(BuildContext context) {
     return FormWrapper(
       formKey: _formKey,
-      appBarTitle: 'Create Movie',
+      appBarTitle: _movie == null ? 'Create Movie' : 'Edit Movie',
+      model: _movie,
       handleSave: _handleSave,
+      handleDelete: _handleDelete,
       formItems: <Widget>[
         MyTextFormField(
           controller: _titleController,
@@ -150,11 +179,12 @@ class _MovieFormState extends State<MovieForm> {
           validator: _validateImageUrl,
         ),
         MyTextFormField(
-            controller: _keyController,
-            decoration: kFormFieldInputDecoration.copyWith(
-              labelText: 'Key *',
-            ),
-            validator: _validateKey),
+          controller: _keyController,
+          decoration: kFormFieldInputDecoration.copyWith(
+            labelText: 'Key *',
+          ),
+          validator: _validateKey,
+        ),
       ],
     );
   }

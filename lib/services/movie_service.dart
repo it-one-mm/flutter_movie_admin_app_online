@@ -28,4 +28,13 @@ class MovieService {
   static Future<void> saveMovie(Map<String, dynamic> data) async {
     await _ref.add(data);
   }
+
+  static Future<void> updateMovie(
+      String docId, Map<String, dynamic> data) async {
+    await _ref.doc(docId).update(data);
+  }
+
+  static Future<void> deleteMovie(String docId) async {
+    await _ref.doc(docId).delete();
+  }
 }
