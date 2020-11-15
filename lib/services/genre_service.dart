@@ -34,6 +34,19 @@ class GenreService {
   }
 
   static Future<void> delete(String docId) async {
-    await _ref.doc(docId).delete();
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    batch.delete(_ref.doc(docId));
+
+    QuerySnapshot qsn = await FirebaseFirestore.instance
+        .collection('movies')
+        .where('genreId', isEqualTo: docId)
+        .get();
+
+    qsn.docs.forEach((QueryDocumentSnapshot qdsn) {
+      batch.delete(qdsn.reference);
+    });
+
+    batch.commit();
   }
 }
