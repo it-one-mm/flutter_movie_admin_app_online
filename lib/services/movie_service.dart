@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:movie_admin_app/utils/firestore_path.dart';
+import '../utils/firestore_path.dart';
 import '../models/movie.dart';
 
 class MovieService {
