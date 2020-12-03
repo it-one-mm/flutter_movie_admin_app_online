@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:movie_admin_app/utils/firestore_path.dart';
 import '../models/movie.dart';
 
 class MovieService {
-  static final _ref = FirebaseFirestore.instance.collection('movies');
+  static final _ref =
+      FirebaseFirestore.instance.collection(FirestorePath.moviesCollection);
 
   static Stream<List<Movie>> streamMovies() {
     return _ref.orderBy(Movie.createdField, descending: true).snapshots().map(

@@ -9,22 +9,25 @@ class Genre {
   final String id;
   final String name;
 
+  static const String nameField = 'name';
+  static const String createdField = 'created';
+
   factory Genre.fromQueryDocumentSnapshot(QueryDocumentSnapshot sn) {
     final data = sn.data();
 
     return Genre(
       id: sn.id,
-      name: data['name'],
+      name: data[nameField],
     );
   }
 
   static Map<String, dynamic> toMap(Genre genre, {bool isNew = false}) {
     Map<String, dynamic> data = {
-      'name': genre.name,
+      nameField: genre.name,
     };
 
     if (isNew) {
-      data['created'] = FieldValue.serverTimestamp();
+      data[createdField] = FieldValue.serverTimestamp();
     }
 
     return data;

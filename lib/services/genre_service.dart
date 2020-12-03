@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/movie.dart';
+import '../utils/firestore_path.dart';
 import '../models/genre.dart';
 
 class GenreService {
   static final CollectionReference _ref =
-      FirebaseFirestore.instance.collection('genres');
+      FirebaseFirestore.instance.collection(FirestorePath.genresCollection);
 
   static Stream<List<Genre>> streamGenres() {
-    return _ref.orderBy('created', descending: true).snapshots().map((qs) =>
-        qs.docs.map((qdsn) => Genre.fromQueryDocumentSnapshot(qdsn)).toList());
+    return _ref.orderBy(Genre.createdField, descending: true).snapshots().map(
+        (qs) => qs.docs
+            .map((qdsn) => Genre.fromQueryDocumentSnapshot(qdsn))
+            .toList());
   }
 
   static Future<bool> checkDocumentsByName(String name) async {
@@ -15,7 +19,7 @@ class GenreService {
     bool isExist = false;
     qsn.docs.forEach((element) {
       final data = element.data();
-      String nameField = data['name'];
+      String nameField = data[Genre.nameField];
 
       if (name.toLowerCase() == nameField.toLowerCase()) {
         isExist = true;
@@ -39,8 +43,8 @@ class GenreService {
     batch.delete(_ref.doc(docId));
 
     QuerySnapshot qsn = await FirebaseFirestore.instance
-        .collection('movies')
-        .where('genreId', isEqualTo: docId)
+        .collection(FirestorePath.moviesCollection)
+        .where(Movie.genreIdField, isEqualTo: docId)
         .get();
 
     qsn.docs.forEach((QueryDocumentSnapshot qdsn) {
