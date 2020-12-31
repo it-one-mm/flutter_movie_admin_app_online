@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide Router;
 import 'package:provider/provider.dart';
-import '../utils/constants.dart';
-import '../widgets/my_text_form_field.dart';
+import '../widgets/my_search.dart';
 import '../widgets/image_tile.dart';
 import '../models/movie.dart';
 import '../widgets/master_view.dart';
@@ -30,6 +29,17 @@ class _MoviesScreenState extends State<MoviesScreen> {
     setState(() {});
   }
 
+  void _onSearch(String value, List<Movie> movies) {
+    if (value.trim().isNotEmpty) {
+      _filterMovies = movies
+          .where((movie) =>
+              movie.title.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    } else {
+      _filterMovies = movies;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final movies = Provider.of<List<Movie>>(context);
@@ -43,39 +53,14 @@ class _MoviesScreenState extends State<MoviesScreen> {
       },
       child: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: MyTextFormField(
-              controller: _searchController,
-              textInputAction: TextInputAction.search,
-              decoration: kSearchInputDecoration.copyWith(
-                hintText: 'Search Movie Title',
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          _clearSearch();
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (value) {
-                setState(() {});
-              },
-              onFieldSubmitted: (String value) {
-                if (value.trim().isNotEmpty) {
-                  _filterMovies = movies
-                      .where((movie) => movie.title
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                } else {
-                  _filterMovies = movies;
-                }
-
-                setState(() {});
-              },
-            ),
+          MySearch(
+            searchController: _searchController,
+            hintText: 'Search Movie...',
+            onSearch: (String value) {
+              _onSearch(value, movies);
+              setState(() {});
+            },
+            onClear: _clearSearch,
           ),
           Expanded(
             child: ListView.separated(

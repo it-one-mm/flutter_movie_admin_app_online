@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide Router;
 import 'package:provider/provider.dart';
-import '../utils/constants.dart';
-import '../widgets/my_text_form_field.dart';
+import '../widgets/my_search.dart';
 import '../router.dart';
 import '../models/genre.dart';
 import '../widgets/master_view.dart';
@@ -42,39 +41,21 @@ class _GenresScreenState extends State<GenresScreen> {
       },
       child: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: MyTextFormField(
-              controller: _searchController,
-              textInputAction: TextInputAction.search,
-              decoration: kSearchInputDecoration.copyWith(
-                hintText: 'Search Genre Name',
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.clear),
-                        onPressed: () {
-                          _clearSearch();
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (value) {
-                setState(() {});
-              },
-              onFieldSubmitted: (String value) {
-                if (value.trim().isNotEmpty) {
-                  _filterGenres = genres
-                      .where((genre) => genre.name
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                } else {
-                  _filterGenres = genres;
-                }
-
-                setState(() {});
-              },
-            ),
+          MySearch(
+            searchController: _searchController,
+            hintText: 'Search Genre...',
+            onClear: _clearSearch,
+            onSearch: (String value) {
+              if (value.trim().isNotEmpty) {
+                _filterGenres = genres
+                    .where((genre) =>
+                        genre.name.toLowerCase().contains(value.toLowerCase()))
+                    .toList();
+              } else {
+                _filterGenres = genres;
+              }
+              setState(() {});
+            },
           ),
           Expanded(
             child: ListView.separated(
