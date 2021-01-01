@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'screens/series_screen.dart';
 import 'screens/genres_screen.dart';
 import 'screens/movies_screen.dart';
 
 class Router {
   static const String GENRES_SCREEN = 'genres_screen';
   static const String MOVIES_SCREEN = 'movies_screen';
+  static const String SERIES_SCREEN = 'series_screen';
 
   static Future buildMaterialRoute(BuildContext context,
       {Widget child, isFullScreen = true}) async {
@@ -32,6 +34,10 @@ class Router {
       case MOVIES_SCREEN:
         return _buildRoute(
           MoviesScreen(),
+        );
+      case SERIES_SCREEN:
+        return _buildRoute(
+          SeriesScreen(),
         );
     }
 

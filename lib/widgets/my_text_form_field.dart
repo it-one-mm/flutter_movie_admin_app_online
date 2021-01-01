@@ -10,6 +10,8 @@ class MyTextFormField extends StatelessWidget {
     this.textInputAction,
     this.keyboardType,
     this.validator,
+    this.maxLines,
+    this.minLines,
     this.onChanged,
     this.onFieldSubmitted,
   });
@@ -22,6 +24,8 @@ class MyTextFormField extends StatelessWidget {
   final Function validator;
   final TextInputAction textInputAction;
   final TextInputType keyboardType;
+  final int maxLines;
+  final int minLines;
   final Function onChanged;
   final Function onFieldSubmitted;
 
@@ -35,6 +39,8 @@ class MyTextFormField extends StatelessWidget {
       textInputAction: textInputAction,
       keyboardType: keyboardType,
       decoration: decoration,
+      maxLines: maxLines,
+      minLines: minLines,
       onChanged: onChanged,
       validator: validator,
       onFieldSubmitted: onFieldSubmitted,
