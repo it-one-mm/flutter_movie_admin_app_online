@@ -28,6 +28,7 @@ class _MovieFormState extends State<MovieForm> {
   Genre _selectedGenre;
   bool _isExist = false;
   Movie _movie;
+  List<Movie> _movies = [];
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _MovieFormState extends State<MovieForm> {
   }
 
   void _init() async {
+    _movies = context.read<List<Movie>>();
     _genres = context.read<List<Genre>>();
 
     if (_movie == null) {
@@ -112,14 +114,13 @@ class _MovieFormState extends State<MovieForm> {
     final imageUrl = _imageUrlController.text.trim();
     final key = _keyController.text.trim();
 
-    final result = await MovieService.checkDocumentByTitle(title);
+    final result = MovieService.checkByTitle(_movies, title);
 
-    setState(() {
-      if (result) {
-        _isExist = true;
-        _formKey.currentState.validate();
-      }
-    });
+    if (result) {
+      _isExist = true;
+      setState(() {});
+      _formKey.currentState.validate();
+    }
 
     if (!result) {
       final movie = Movie(

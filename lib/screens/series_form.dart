@@ -18,7 +18,9 @@ class _SeriesFormState extends State<SeriesForm> {
   final _imageUrlController = TextEditingController();
   final _descriptionController = TextEditingController();
   List<Genre> _genres;
+  List<Series> _series = [];
   Genre _selectedGenre;
+  bool _isExist = false;
 
   @override
   void initState() {
@@ -28,6 +30,7 @@ class _SeriesFormState extends State<SeriesForm> {
   }
 
   void _init() async {
+    _series = context.read<List<Series>>();
     _genres = context.read<List<Genre>>();
     _selectedGenre = _genres[0];
   }
@@ -69,24 +72,39 @@ class _SeriesFormState extends State<SeriesForm> {
     final imageUrl = _imageUrlController.text.trim();
     final description = _descriptionController.text.trim();
 
-    final series = Series(
-      title: title,
-      imageUrl: imageUrl,
-      description: description,
-      genreId: _selectedGenre.id,
-      genreName: _selectedGenre.name,
-    );
+    final result = SeriesService.checkByTitle(_series, title);
 
-    await SeriesService.saveSeries(Series.toMap(series, isNew: true));
+    if (result) {
+      _isExist = true;
+      setState(() {});
+      _formKey.currentState.validate();
+    }
 
-    _formKey.currentState.reset();
-    _titleController.clear();
-    _imageUrlController.clear();
-    _descriptionController.clear();
+    if (!result) {
+      final series = Series(
+        title: title,
+        imageUrl: imageUrl,
+        description: description,
+        genreId: _selectedGenre.id,
+        genreName: _selectedGenre.name,
+      );
+
+      await SeriesService.saveSeries(Series.toMap(series, isNew: true));
+
+      _formKey.currentState.reset();
+      _titleController.clear();
+      _imageUrlController.clear();
+      _descriptionController.clear();
+    }
   }
 
   String _validateTitle(String val) {
     if (val.trim().isEmpty) return 'Title is required.';
+
+    if (_isExist) {
+      _isExist = false;
+      return 'Title is already taken.';
+    }
 
     return null;
   }

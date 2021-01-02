@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils/constants.dart';
 import '../utils/ui_helper.dart';
 import '../widgets/form_wrapper.dart';
@@ -20,6 +21,7 @@ class _GenreFormState extends State<GenreForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   bool _isExist = false;
+  List<Genre> _genres = [];
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _GenreFormState extends State<GenreForm> {
   }
 
   void _init() {
+    _genres = context.read<List<Genre>>();
     if (_genre != null) {
       _nameController.text = _genre.name;
     }
@@ -59,15 +62,13 @@ class _GenreFormState extends State<GenreForm> {
     final name = _nameController.text.trim();
 
     // check genre already taken
-    final result = await GenreService.checkDocumentsByName(name);
-    setState(() {
-      if (result) {
-        _isExist = true;
-        _formKey.currentState.validate();
-      } else {
-        _isExist = false;
-      }
-    });
+    final result = GenreService.checkByName(_genres, name);
+
+    if (result) {
+      _isExist = true;
+      setState(() {});
+      _formKey.currentState.validate();
+    }
 
     if (!result) {
       Genre genre = Genre(

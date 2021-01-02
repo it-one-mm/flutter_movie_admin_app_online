@@ -8,7 +8,7 @@ class MyTextFormField extends StatelessWidget {
     this.textCapitalization = TextCapitalization.none,
     this.decoration,
     this.textInputAction,
-    this.keyboardType,
+    this.keyboardType = TextInputType.text,
     this.validator,
     this.maxLines,
     this.minLines,

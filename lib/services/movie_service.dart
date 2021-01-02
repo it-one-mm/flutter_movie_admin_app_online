@@ -13,17 +13,13 @@ class MovieService {
             .toList());
   }
 
-  static Future<bool> checkDocumentByTitle(String title) async {
-    final qsn = await _ref.get();
+  static bool checkByTitle(List<Movie> list, String title) {
+    final count = list
+        .where((item) => item.title.toLowerCase() == title.toLowerCase())
+        .toList()
+        .length;
 
-    for (var doc in qsn.docs) {
-      final data = doc.data();
-      final String titleValue = data[Movie.titleField];
-      if (titleValue.toLowerCase() == title.toLowerCase()) {
-        return true;
-      }
-    }
-
+    if (count > 0) return true;
     return false;
   }
 

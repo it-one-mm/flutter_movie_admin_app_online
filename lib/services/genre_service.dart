@@ -14,19 +14,14 @@ class GenreService {
             .toList());
   }
 
-  static Future<bool> checkDocumentsByName(String name) async {
-    final qsn = await _ref.get();
-    bool isExist = false;
-    qsn.docs.forEach((element) {
-      final data = element.data();
-      String nameField = data[Genre.nameField];
+  static bool checkByName(List<Genre> list, String name) {
+    final count = list
+        .where((item) => item.name.toLowerCase() == name.toLowerCase())
+        .toList()
+        .length;
 
-      if (name.toLowerCase() == nameField.toLowerCase()) {
-        isExist = true;
-      }
-    });
-
-    return isExist;
+    if (count > 0) return true;
+    return false;
   }
 
   static Future<void> save(Genre genre) async {

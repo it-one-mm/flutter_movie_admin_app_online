@@ -22,6 +22,7 @@ class Series {
   static const String descriptionField = 'description';
   static const String genreIdField = 'genreId';
   static const String genreNameField = 'genreName';
+  static const String createdField = 'created';
 
   static Map<String, dynamic> toMap(Series series, {bool isNew = false}) {
     final Map<String, dynamic> data = {
@@ -33,9 +34,21 @@ class Series {
     };
 
     if (isNew) {
-      data['created'] = FieldValue.serverTimestamp();
+      data[createdField] = FieldValue.serverTimestamp();
     }
 
     return data;
+  }
+
+  factory Series.fromQueryDocumentSnapshot(QueryDocumentSnapshot qdsn) {
+    final data = qdsn.data();
+
+    return Series(
+      id: qdsn.id,
+      title: data[titleField],
+      imageUrl: data[imageUrlField],
+      genreId: data[genreIdField],
+      genreName: data[genreNameField],
+    );
   }
 }
