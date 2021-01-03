@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../services/movie_service.dart';
 import '../utils/ui_helper.dart';
@@ -29,6 +30,7 @@ class _MovieFormState extends State<MovieForm> {
   bool _isExist = false;
   Movie _movie;
   List<Movie> _movies = [];
+  MovieService _movieService;
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _MovieFormState extends State<MovieForm> {
   }
 
   void _init() async {
+    _movieService = GetIt.instance<MovieService>();
     _movies = context.read<List<Movie>>();
     _genres = context.read<List<Genre>>();
 
@@ -114,7 +117,7 @@ class _MovieFormState extends State<MovieForm> {
     final imageUrl = _imageUrlController.text.trim();
     final key = _keyController.text.trim();
 
-    final result = MovieService.checkByTitle(_movies, title);
+    final result = _movieService.isExistTitle(_movies, title);
 
     if (result) {
       _isExist = true;
@@ -132,9 +135,9 @@ class _MovieFormState extends State<MovieForm> {
       );
 
       if (_movie == null) {
-        await MovieService.saveMovie(Movie.toMap(movie, isNew: true));
+        await _movieService.add(Movie.toMap(movie, isNew: true));
       } else {
-        await MovieService.updateMovie(_movie.id, Movie.toMap(movie));
+        await _movieService.update(_movie.id, Movie.toMap(movie));
         Navigator.pop(context);
       }
 
@@ -148,7 +151,7 @@ class _MovieFormState extends State<MovieForm> {
   }
 
   void _handleDelete() async {
-    await MovieService.deleteMovie(_movie.id);
+    await _movieService.delete(_movie.id);
     Navigator.pop(context);
 
     UIHelper.showSuccessFlushbar(context, 'Movie deleted successfully!');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../models/series.dart';
 import '../services/series_service.dart';
@@ -21,6 +22,7 @@ class _SeriesFormState extends State<SeriesForm> {
   List<Series> _series = [];
   Genre _selectedGenre;
   bool _isExist = false;
+  SeriesService _seriesService;
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _SeriesFormState extends State<SeriesForm> {
   }
 
   void _init() async {
+    _seriesService = GetIt.instance<SeriesService>();
     _series = context.read<List<Series>>();
     _genres = context.read<List<Genre>>();
     _selectedGenre = _genres[0];
@@ -72,7 +75,7 @@ class _SeriesFormState extends State<SeriesForm> {
     final imageUrl = _imageUrlController.text.trim();
     final description = _descriptionController.text.trim();
 
-    final result = SeriesService.checkByTitle(_series, title);
+    final result = _seriesService.checkByTitle(_series, title);
 
     if (result) {
       _isExist = true;
@@ -89,7 +92,7 @@ class _SeriesFormState extends State<SeriesForm> {
         genreName: _selectedGenre.name,
       );
 
-      await SeriesService.saveSeries(Series.toMap(series, isNew: true));
+      await _seriesService.add(Series.toMap(series, isNew: true));
 
       _formKey.currentState.reset();
       _titleController.clear();

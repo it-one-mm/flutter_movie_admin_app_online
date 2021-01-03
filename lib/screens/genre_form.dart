@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 import '../utils/constants.dart';
 import '../utils/ui_helper.dart';
 import '../widgets/form_wrapper.dart';
@@ -22,6 +23,7 @@ class _GenreFormState extends State<GenreForm> {
   final _nameController = TextEditingController();
   bool _isExist = false;
   List<Genre> _genres = [];
+  GenreService _genreService;
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _GenreFormState extends State<GenreForm> {
   }
 
   void _init() {
+    _genreService = GetIt.instance<GenreService>();
     _genres = context.read<List<Genre>>();
     if (_genre != null) {
       _nameController.text = _genre.name;
@@ -62,7 +65,7 @@ class _GenreFormState extends State<GenreForm> {
     final name = _nameController.text.trim();
 
     // check genre already taken
-    final result = GenreService.checkByName(_genres, name);
+    final result = _genreService.isExistName(_genres, name);
 
     if (result) {
       _isExist = true;
@@ -77,10 +80,10 @@ class _GenreFormState extends State<GenreForm> {
 
       if (_genre == null) {
         // genre save
-        await GenreService.save(genre);
+        await _genreService.add(Genre.toMap(genre, isNew: true));
       } else {
         // update
-        await GenreService.update(_genre.id, genre);
+        await _genreService.update(_genre.id, Genre.toMap(genre));
         Navigator.pop(context);
       }
 
@@ -93,7 +96,7 @@ class _GenreFormState extends State<GenreForm> {
 
   Future<void> _handleDelete() async {
     // delete
-    await GenreService.delete(_genre.id);
+    await _genreService.delete(_genre.id);
     Navigator.pop(context);
 
     UIHelper.showSuccessFlushbar(context, 'Genre delete successfully!');

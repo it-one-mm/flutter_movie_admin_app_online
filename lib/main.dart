@@ -1,4 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get_it/get_it.dart';
+import 'service_locator.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'services/series_service.dart';
@@ -12,6 +14,7 @@ import 'router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  setup();
   runApp(MyApp());
 }
 
@@ -22,15 +25,15 @@ class MyApp extends StatelessWidget {
       providers: [
         StreamProvider.value(
           initialData: <Genre>[],
-          value: GenreService.streamGenres(),
+          value: GetIt.instance<GenreService>().streamGenres(),
         ),
         StreamProvider.value(
           initialData: <Movie>[],
-          value: MovieService.streamMovies(),
+          value: GetIt.instance<MovieService>().streamMovies(),
         ),
         StreamProvider.value(
           initialData: <Series>[],
-          value: SeriesService.streamSeries(),
+          value: GetIt.instance<SeriesService>().streamSeries(),
         ),
       ],
       child: MaterialApp(
