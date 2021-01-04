@@ -75,7 +75,7 @@ class _SeriesFormState extends State<SeriesForm> {
     final imageUrl = _imageUrlController.text.trim();
     final description = _descriptionController.text.trim();
 
-    final result = _seriesService.checkByTitle(_series, title);
+    final result = _seriesService.isExistTitle(_series, title);
 
     if (result) {
       _isExist = true;
