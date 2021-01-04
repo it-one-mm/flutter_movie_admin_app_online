@@ -156,7 +156,7 @@ class _SeriesFormState extends State<SeriesForm> {
   Widget build(BuildContext context) {
     return FormWrapper(
       formKey: _formKey,
-      appBarTitle: 'Create Series',
+      appBarTitle: _series == null ? 'Create Series' : 'Edit Series',
       model: _series,
       handleSave: _handleSave,
       handleDelete: _handleDelete,
