@@ -117,7 +117,12 @@ class _MovieFormState extends State<MovieForm> {
     final imageUrl = _imageUrlController.text.trim();
     final key = _keyController.text.trim();
 
-    final result = _movieService.isExistTitle(_movies, title);
+    bool result = false;
+    if (_movie == null) {
+      result = _movieService.isExistTitle(_movies, title);
+    } else {
+      result = _movieService.isExistTitle(_movies, title, _movie.id);
+    }
 
     if (result) {
       _isExist = true;

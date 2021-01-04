@@ -18,7 +18,11 @@ class MovieService extends FsService {
             .toList());
   }
 
-  bool isExistTitle(List<Movie> list, String title) {
+  bool isExistTitle(List<Movie> list, String title, [String updateId]) {
+    if (updateId != null) {
+      list.removeWhere((item) => item.id == updateId);
+    }
+
     final count = list
         .where((item) => item.title.toLowerCase() == title.toLowerCase())
         .toList()
