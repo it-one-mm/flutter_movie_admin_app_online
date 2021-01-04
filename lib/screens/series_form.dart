@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import '../utils/ui_helper.dart';
 import '../models/series.dart';
 import '../services/series_service.dart';
 import '../models/genre.dart';
@@ -9,6 +10,10 @@ import '../widgets/my_text_form_field.dart';
 import '../widgets/form_wrapper.dart';
 
 class SeriesForm extends StatefulWidget {
+  final Series series;
+
+  SeriesForm({this.series});
+
   @override
   _SeriesFormState createState() => _SeriesFormState();
 }
@@ -19,23 +24,34 @@ class _SeriesFormState extends State<SeriesForm> {
   final _imageUrlController = TextEditingController();
   final _descriptionController = TextEditingController();
   List<Genre> _genres;
-  List<Series> _series = [];
+  List<Series> _seriesList = [];
   Genre _selectedGenre;
   bool _isExist = false;
   SeriesService _seriesService;
+  Series _series;
 
   @override
   void initState() {
     super.initState();
 
+    _series = widget.series;
     _init();
   }
 
   void _init() async {
     _seriesService = GetIt.instance<SeriesService>();
-    _series = context.read<List<Series>>();
+    _seriesList = context.read<List<Series>>();
     _genres = context.read<List<Genre>>();
-    _selectedGenre = _genres[0];
+    if (_series == null) {
+      _selectedGenre = _genres[0];
+    } else {
+      _titleController.text = _series.title;
+      _imageUrlController.text = _series.imageUrl;
+      _descriptionController.text = _series.description;
+
+      _selectedGenre =
+          _genres.where((genre) => genre.id == _series.genreId).first;
+    }
   }
 
   Widget _buildDropDown() {
@@ -75,7 +91,13 @@ class _SeriesFormState extends State<SeriesForm> {
     final imageUrl = _imageUrlController.text.trim();
     final description = _descriptionController.text.trim();
 
-    final result = _seriesService.isExistTitle(_series, title);
+    bool result = false;
+
+    if (_series == null) {
+      result = _seriesService.isExistTitle(_seriesList, title);
+    } else {
+      result = _seriesService.isExistTitle(_seriesList, title, _series.id);
+    }
 
     if (result) {
       _isExist = true;
@@ -92,7 +114,12 @@ class _SeriesFormState extends State<SeriesForm> {
         genreName: _selectedGenre.name,
       );
 
-      await _seriesService.add(Series.toMap(series, isNew: true));
+      if (_series == null) {
+        await _seriesService.add(Series.toMap(series, isNew: true));
+      } else {
+        await _seriesService.update(_series.id, Series.toMap(series));
+        Navigator.pop(context);
+      }
 
       _formKey.currentState.reset();
       _titleController.clear();
@@ -118,12 +145,21 @@ class _SeriesFormState extends State<SeriesForm> {
     return null;
   }
 
+  void _handleDelete() async {
+    await _seriesService.delete(_series.id);
+    Navigator.pop(context);
+
+    UIHelper.showSuccessFlushbar(context, 'Series deleted successfully!');
+  }
+
   @override
   Widget build(BuildContext context) {
     return FormWrapper(
       formKey: _formKey,
       appBarTitle: 'Create Series',
+      model: _series,
       handleSave: _handleSave,
+      handleDelete: _handleDelete,
       formItems: [
         MyTextFormField(
           controller: _titleController,

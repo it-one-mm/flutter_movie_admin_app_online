@@ -34,7 +34,14 @@ class _SeriesScreenState extends State<SeriesScreen> {
                   imageUrl: series.imageUrl,
                   title: series.title,
                   subTitle: series.genreName,
-                  onEdit: () async {},
+                  onEdit: () async {
+                    await Router.buildMaterialRoute(
+                      context,
+                      child: SeriesForm(
+                        series: series,
+                      ),
+                    );
+                  },
                 );
               },
             ),

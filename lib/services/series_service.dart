@@ -8,7 +8,10 @@ class SeriesService extends FsService {
       : super(FirebaseFirestore.instance
             .collection(FirestorePath.seriesCollection));
 
-  bool isExistTitle(List<Series> list, String title) {
+  bool isExistTitle(List<Series> list, String title, [String existingId]) {
+    if (existingId != null) {
+      list.removeWhere((item) => item.id == existingId);
+    }
     final count = list
         .where((item) => item.title.toLowerCase() == title.toLowerCase())
         .toList()
