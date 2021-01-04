@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
         StreamProvider.value(
           initialData: <Series>[],
           value: GetIt.instance<SeriesService>().streamSeries(),
+          lazy: false,
         ),
       ],
       child: MaterialApp(

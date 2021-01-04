@@ -21,4 +21,9 @@ class UIHelper {
   static void showSuccessFlushbar(BuildContext context, String message) {
     _buildFlushbar(context, message: message);
   }
+
+  static void showErrorFlushbar(BuildContext context, String message) {
+    _buildFlushbar(context,
+        message: message, icon: Icons.clear, color: Colors.red[300]);
+  }
 }

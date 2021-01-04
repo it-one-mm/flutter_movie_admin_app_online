@@ -45,6 +45,11 @@ class MyDrawer extends StatelessWidget {
             title: 'Series',
             routeName: Router.SERIES_SCREEN,
           ),
+          _buildDrawerItem(
+            context,
+            title: 'Episodes',
+            routeName: Router.EPISODES_SCREEN,
+          ),
         ],
       ),
     );
