@@ -4,7 +4,7 @@ import 'my_text_form_field.dart';
 
 class MySearch extends StatefulWidget {
   final TextEditingController searchController;
-  final void Function() onClear;
+  final Function onClear;
   final void Function(String) onSearch;
   final String hintText;
 
