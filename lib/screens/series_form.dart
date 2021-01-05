@@ -120,6 +120,8 @@ class _SeriesFormState extends State<SeriesForm> {
         Navigator.pop(context);
       }
 
+      UIHelper.showSuccessFlushbar(context, 'Series saved successfully!');
+
       _formKey.currentState.reset();
       _titleController.clear();
       _imageUrlController.clear();

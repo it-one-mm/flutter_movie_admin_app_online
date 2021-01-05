@@ -36,7 +36,14 @@ class _EpisodesScreenState extends State<EpisodesScreen> {
                 return ImageTile(
                   title: 'Episode ${episode.no}',
                   subTitle: episode.seriesTitle,
-                  onEdit: () async {},
+                  onEdit: () async {
+                    await Router.buildMaterialRoute(
+                      context,
+                      child: EpisodeForm(
+                        episode: episode,
+                      ),
+                    );
+                  },
                 );
               },
             ),

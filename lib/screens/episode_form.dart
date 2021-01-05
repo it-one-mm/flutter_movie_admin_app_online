@@ -42,7 +42,14 @@ class _EpisodeFormState extends State<EpisodeForm> {
     _episodes = context.read<List<Episode>>();
     _episodeService = GetIt.instance<EpisodeService>();
     _seriesList = context.read<List<Series>>();
-    _selectedSeries = _seriesList?.first;
+    if (_episode == null) {
+      _selectedSeries = _seriesList?.first;
+    } else {
+      _noController.text = _episode.no;
+      _keyController.text = _episode.key;
+      _selectedSeries =
+          _seriesList.where((s) => s.id == _episode.seriesId).first;
+    }
   }
 
   @override
@@ -111,6 +118,13 @@ class _EpisodeFormState extends State<EpisodeForm> {
         no,
         _selectedSeries.id,
       );
+    } else {
+      result = _episodeService.isExistEpisode(
+        _episodes,
+        no,
+        _selectedSeries.id,
+        _episode.id,
+      );
     }
 
     if (result) {
@@ -126,7 +140,14 @@ class _EpisodeFormState extends State<EpisodeForm> {
         seriesTitle: _selectedSeries.title,
       );
 
-      await _episodeService.add(episode.toMap(isNew: true));
+      if (_episode == null) {
+        await _episodeService.add(episode.toMap(isNew: true));
+      } else {
+        await _episodeService.update(_episode.id, episode.toMap());
+        Navigator.pop(context);
+      }
+
+      UIHelper.showSuccessFlushbar(context, 'Episode saved successfully!');
 
       _formKey.currentState.reset();
       _noController.clear();
@@ -134,13 +155,21 @@ class _EpisodeFormState extends State<EpisodeForm> {
     }
   }
 
+  void _handleDelete() async {
+    await _episodeService.delete(_episode.id);
+    Navigator.pop(context);
+
+    UIHelper.showSuccessFlushbar(context, 'Episode deleted successfully!');
+  }
+
   @override
   Widget build(BuildContext context) {
     return FormWrapper(
       formKey: _formKey,
-      appBarTitle: 'Create Episode',
+      appBarTitle: _episode == null ? 'Create Episode' : 'Edit Episode',
       model: _episode,
       handleSave: _handleSave,
+      handleDelete: _handleDelete,
       formItems: [
         MyTextFormField(
           controller: _noController,

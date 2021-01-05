@@ -8,10 +8,16 @@ class EpisodeService extends FsService {
       : super(FirebaseFirestore.instance
             .collection(FirestorePath.episodesCollection));
 
-  bool isExistEpisode(List<Episode> list, String no, String seriesId) {
+  bool isExistEpisode(List<Episode> list, String no, String seriesId,
+      [String episodeId]) {
+    if (episodeId != null) {
+      list.removeWhere((item) => item.id == episodeId);
+    }
+
     final count =
         list.where((item) => item.no == no && item.seriesId == seriesId).length;
     if (count > 0) return true;
+
     return false;
   }
 
