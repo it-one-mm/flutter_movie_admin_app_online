@@ -26,7 +26,9 @@ class _EpisodeFormState extends State<EpisodeForm> {
   List<Series> _seriesList = [];
   Series _selectedSeries;
   Episode _episode;
+  List<Episode> _episodes;
   EpisodeService _episodeService;
+  bool _isExist = false;
 
   @override
   void initState() {
@@ -37,6 +39,7 @@ class _EpisodeFormState extends State<EpisodeForm> {
   }
 
   void _init() async {
+    _episodes = context.read<List<Episode>>();
     _episodeService = GetIt.instance<EpisodeService>();
     _seriesList = context.read<List<Series>>();
     _selectedSeries = _seriesList?.first;
@@ -83,6 +86,11 @@ class _EpisodeFormState extends State<EpisodeForm> {
       return 'Number must be greater than 0.';
     }
 
+    if (_isExist) {
+      _isExist = false;
+      return 'No is already exist.';
+    }
+
     return null;
   }
 
@@ -96,18 +104,34 @@ class _EpisodeFormState extends State<EpisodeForm> {
     final no = _noController.text.trim();
     final key = _keyController.text.trim();
 
-    Episode episode = Episode(
-      no: no,
-      key: key,
-      seriesId: _selectedSeries.id,
-      seriesTitle: _selectedSeries.title,
-    );
+    bool result = false;
+    if (_episode == null) {
+      result = _episodeService.isExistEpisode(
+        _episodes,
+        no,
+        _selectedSeries.id,
+      );
+    }
 
-    await _episodeService.add(episode.toMap(isNew: true));
+    if (result) {
+      _isExist = true;
+      _formKey.currentState.validate();
+    }
 
-    _formKey.currentState.reset();
-    _noController.clear();
-    _keyController.clear();
+    if (!result) {
+      Episode episode = Episode(
+        no: no,
+        key: key,
+        seriesId: _selectedSeries.id,
+        seriesTitle: _selectedSeries.title,
+      );
+
+      await _episodeService.add(episode.toMap(isNew: true));
+
+      _formKey.currentState.reset();
+      _noController.clear();
+      _keyController.clear();
+    }
   }
 
   @override

@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 import 'service_locator.dart';
+import 'models/episode.dart';
+import 'services/episode_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'services/series_service.dart';
@@ -35,6 +37,10 @@ class MyApp extends StatelessWidget {
           initialData: <Series>[],
           value: GetIt.instance<SeriesService>().streamSeries(),
           lazy: false,
+        ),
+        StreamProvider.value(
+          initialData: <Episode>[],
+          value: GetIt.instance<EpisodeService>().streamEpisodes(),
         ),
       ],
       child: MaterialApp(

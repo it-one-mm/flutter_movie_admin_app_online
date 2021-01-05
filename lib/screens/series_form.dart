@@ -101,7 +101,6 @@ class _SeriesFormState extends State<SeriesForm> {
 
     if (result) {
       _isExist = true;
-      setState(() {});
       _formKey.currentState.validate();
     }
 

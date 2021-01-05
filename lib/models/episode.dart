@@ -35,4 +35,16 @@ class Episode {
 
     return data;
   }
+
+  factory Episode.fromQueryDocumentSnapshot(QueryDocumentSnapshot qdsn) {
+    final data = qdsn.data();
+
+    return Episode(
+      id: qdsn.id,
+      no: data[noField],
+      key: data[keyField],
+      seriesId: data[seriesIdField],
+      seriesTitle: data[seriesTitleField],
+    );
+  }
 }

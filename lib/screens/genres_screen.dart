@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Router;
+import 'package:movie_admin_app/widgets/image_tile.dart';
 import 'package:provider/provider.dart';
 import '../widgets/my_search.dart';
 import '../router.dart';
@@ -64,17 +65,14 @@ class _GenresScreenState extends State<GenresScreen> {
               itemBuilder: (context, index) {
                 final genre = results[index];
 
-                return ListTile(
-                  title: Text(genre.name),
-                  trailing: IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () async {
-                      await Router.buildMaterialRoute(context,
-                          child: GenreForm(genre: genre));
+                return ImageTile(
+                  title: genre.name,
+                  onEdit: () async {
+                    await Router.buildMaterialRoute(context,
+                        child: GenreForm(genre: genre));
 
-                      _clearSearch();
-                    },
-                  ),
+                    _clearSearch();
+                  },
                 );
               },
             ),

@@ -69,7 +69,6 @@ class _GenreFormState extends State<GenreForm> {
 
     if (result) {
       _isExist = true;
-      setState(() {});
       _formKey.currentState.validate();
     }
 

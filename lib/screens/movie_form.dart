@@ -126,7 +126,6 @@ class _MovieFormState extends State<MovieForm> {
 
     if (result) {
       _isExist = true;
-      setState(() {});
       _formKey.currentState.validate();
     }
 
