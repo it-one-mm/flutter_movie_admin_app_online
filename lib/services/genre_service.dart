@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'fs_service.dart';
 import '../models/episode.dart';
 import '../models/series.dart';
-import '../services/fs_service.dart';
 import '../models/movie.dart';
 import '../utils/firestore_path.dart';
 import '../models/genre.dart';
