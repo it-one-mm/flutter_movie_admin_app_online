@@ -10,12 +10,15 @@ class EpisodeService extends FsService {
 
   bool isExistEpisode(List<Episode> list, String no, String seriesId,
       [String episodeId]) {
+    final List<Episode> newList = [...list];
+
     if (episodeId != null) {
-      list.removeWhere((item) => item.id == episodeId);
+      newList.removeWhere((item) => item.id == episodeId);
     }
 
-    final count =
-        list.where((item) => item.no == no && item.seriesId == seriesId).length;
+    final count = newList
+        .where((item) => item.no == no && item.seriesId == seriesId)
+        .length;
     if (count > 0) return true;
 
     return false;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import '../widgets/platform_aware_dialog.dart';
 import '../services/movie_service.dart';
 import '../utils/ui_helper.dart';
 import '../models/movie.dart';
@@ -155,10 +156,34 @@ class _MovieFormState extends State<MovieForm> {
   }
 
   void _handleDelete() async {
-    await _movieService.delete(_movie.id);
-    Navigator.pop(context);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PlatFormAwareDialog(
+        title: 'Are you sure you want to delete?',
+        actions: [
+          FlatButton(
+            onPressed: () async {
+              Navigator.pop(_);
+              await _movieService.delete(_movie.id);
+              Navigator.pop(context);
 
-    UIHelper.showSuccessFlushbar(context, 'Movie deleted successfully!');
+              UIHelper.showSuccessFlushbar(
+                  context, 'Movie deleted successfully!');
+            },
+            child: Text('OK'),
+            color: Colors.redAccent,
+          ),
+          FlatButton(
+            color: Colors.blueAccent,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('CANCEL'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

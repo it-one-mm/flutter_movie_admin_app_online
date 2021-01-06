@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
+import '../widgets/platform_aware_dialog.dart';
 import '../utils/constants.dart';
 import '../utils/ui_helper.dart';
 import '../widgets/form_wrapper.dart';
@@ -93,12 +94,35 @@ class _GenreFormState extends State<GenreForm> {
     }
   }
 
-  Future<void> _handleDelete() async {
-    // delete
-    await _genreService.delete(_genre.id);
-    Navigator.pop(context);
+  void _handleDelete() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PlatFormAwareDialog(
+        title: 'Are you sure you want to delete?',
+        actions: [
+          FlatButton(
+            onPressed: () async {
+              Navigator.pop(_);
+              await _genreService.delete(_genre.id);
+              Navigator.pop(context);
 
-    UIHelper.showSuccessFlushbar(context, 'Genre delete successfully!');
+              UIHelper.showSuccessFlushbar(
+                  context, 'Genre delete successfully!');
+            },
+            child: Text('OK'),
+            color: Colors.redAccent,
+          ),
+          FlatButton(
+            color: Colors.blueAccent,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('CANCEL'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

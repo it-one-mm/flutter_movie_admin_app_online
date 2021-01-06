@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import '../widgets/platform_aware_dialog.dart';
 import '../utils/ui_helper.dart';
 import '../models/series.dart';
 import '../services/series_service.dart';
@@ -147,10 +148,34 @@ class _SeriesFormState extends State<SeriesForm> {
   }
 
   void _handleDelete() async {
-    await _seriesService.delete(_series.id);
-    Navigator.pop(context);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => PlatFormAwareDialog(
+        title: 'Are you sure you want to delete?',
+        actions: [
+          FlatButton(
+            onPressed: () async {
+              Navigator.pop(_);
+              await _seriesService.delete(_series.id);
+              Navigator.pop(context);
 
-    UIHelper.showSuccessFlushbar(context, 'Series deleted successfully!');
+              UIHelper.showSuccessFlushbar(
+                  context, 'Series deleted successfully!');
+            },
+            child: Text('OK'),
+            color: Colors.redAccent,
+          ),
+          FlatButton(
+            color: Colors.blueAccent,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('CANCEL'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

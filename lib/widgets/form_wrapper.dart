@@ -47,6 +47,9 @@ class _FormWrapperState extends State<FormWrapper> {
       _isAsyncCall = true;
     });
 
+    // dismiss keyboard during async call
+    FocusScope.of(context).requestFocus(FocusNode());
+
     // delete
     if (widget.handleDelete != null) await widget.handleDelete();
 

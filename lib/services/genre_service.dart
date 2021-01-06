@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/episode.dart';
 import '../models/series.dart';
 import '../services/fs_service.dart';
 import '../models/movie.dart';
@@ -31,30 +32,68 @@ class GenreService extends FsService {
   }
 
   @override
+  Future<void> update(String docId, Map<String, dynamic> data) async {
+    String name = data[Genre.nameField];
+
+    final fs = FirebaseFirestore.instance;
+
+    WriteBatch batch = fs.batch();
+
+    batch.update(super.ref.doc(docId), data);
+
+    final movieSnapshot = await fs
+        .collection(FirestorePath.moviesCollection)
+        .where(Movie.genreIdField, isEqualTo: docId)
+        .get();
+    for (var document in movieSnapshot.docs) {
+      batch.update(document.reference, {Movie.genreNameField: name});
+    }
+
+    final seriesSnapshot = await fs
+        .collection(FirestorePath.seriesCollection)
+        .where(Series.genreIdField, isEqualTo: docId)
+        .get();
+    for (var document in seriesSnapshot.docs) {
+      batch.update(document.reference, {Series.genreNameField: name});
+    }
+
+    return batch.commit();
+  }
+
+  @override
   Future<void> delete(String docId) async {
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+    final fs = FirebaseFirestore.instance;
+
+    WriteBatch batch = fs.batch();
 
     batch.delete(super.ref.doc(docId));
 
-    QuerySnapshot qsn;
-    qsn = await FirebaseFirestore.instance
+    final movieSnapshot = await fs
         .collection(FirestorePath.moviesCollection)
         .where(Movie.genreIdField, isEqualTo: docId)
         .get();
 
-    qsn.docs.forEach((QueryDocumentSnapshot qdsn) {
-      batch.delete(qdsn.reference);
-    });
+    for (var document in movieSnapshot.docs) {
+      batch.delete(document.reference);
+    }
 
-    qsn = await FirebaseFirestore.instance
+    final seriesSnapshot = await fs
         .collection(FirestorePath.seriesCollection)
         .where(Series.genreIdField, isEqualTo: docId)
         .get();
 
-    qsn.docs.forEach((QueryDocumentSnapshot qdsn) {
-      batch.delete(qdsn.reference);
-    });
+    for (var document in seriesSnapshot.docs) {
+      final episodeSnapshot = await fs
+          .collection(FirestorePath.episodesCollection)
+          .where(Episode.seriesIdField, isEqualTo: document.id)
+          .get();
+      for (var element in episodeSnapshot.docs) {
+        batch.delete(element.reference);
+      }
 
-    batch.commit();
+      batch.delete(document.reference);
+    }
+
+    return batch.commit();
   }
 }
