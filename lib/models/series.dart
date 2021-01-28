@@ -49,6 +49,7 @@ class Series {
       imageUrl: data[imageUrlField],
       genreId: data[genreIdField],
       genreName: data[genreNameField],
+      description: data[descriptionField],
     );
   }
 }
